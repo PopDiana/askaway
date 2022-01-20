@@ -1,0 +1,563 @@
+﻿@model askaway.Models.Question
+@using System.Security.Claims;
+
+<div class="col-lg-8" style="margin-top:50px; margin-bottom:30px">
+
+    <div class="panel panel-default">
+
+        <div class="panel-body">
+            <div style="float:right">
+
+                <form>
+                    <input type="hidden" asp-for="@Model.QuestionId" />
+                    @if (User.Identity.IsAuthenticated && (User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.UserId) || User.IsInRole("Admin"))
+                    {
+                        <a asp-action="Edit" asp-route-id="@Model.QuestionId"> <span style="font-size:larger" class="glyphicon glyphicon-pencil"></span></a>
+                        <a asp-action="Delete" asp-route-id="@Model.QuestionId"> <span style="font-size:larger" class="glyphicon glyphicon-remove"></span></a>
+
+                    }
+                </form>
+            </div>
+
+            @if (Model.Anonymous == true)
+            {
+
+                <h5>
+
+                    anonymous asks:
+                </h5>
+
+            }
+            else
+            {
+                
+                    @foreach(var item in ViewBag.users)
+                    {
+                        if(item.Id == Model.UserId)
+                        {
+                            <h5>@item.UserName asks:</h5>
+                            break;
+                        }
+                    }
+                        
+                        
+                
+            }
+
+
+
+            <br>
+            <h4 style="margin-right:20px; margin-left:40px" class="text-primary">
+                @Html.DisplayFor(model => model.Text)
+            </h4>
+            <br />
+            <div style="float:left">
+                @{
+                    TimeSpan timeDifference = DateTime.Now - Model.Date;
+                    int intTime = (int)timeDifference.TotalMinutes;
+                    string timeType = "minutes";
+                    if (intTime == 1)
+                    {
+                        timeType = "minute";
+                    }
+
+
+                    if (intTime > 59)
+                    {
+
+                        intTime = (int)timeDifference.TotalHours;
+                        if (intTime == 1)
+                        {
+                            timeType = "hour";
+                        }
+                        else
+                        {
+                            timeType = "hours";
+                        }
+                    }
+
+                    if (intTime > 23)
+                    {
+
+                        intTime = (int)timeDifference.TotalDays;
+                        if (intTime == 1)
+                        {
+                            timeType = "day";
+                        }
+                        else
+                        {
+                            timeType = "days";
+                        }
+                    }
+
+
+                    if (intTime > 30)
+                    {
+
+                        intTime = intTime / 31;
+                        if (intTime == 1)
+                        {
+                            timeType = "month";
+                        }
+                        else
+                        {
+                            timeType = "months";
+                        }
+                    }
+
+
+                    if (intTime > 364)
+                    {
+
+                        intTime = intTime / 365;
+                        if (intTime == 1)
+                        {
+                            timeType = "year";
+                        }
+                        else
+                        {
+                            timeType = "years";
+                        }
+                    }
+
+                    if (intTime == 0)
+                    {
+                        <h5>
+
+                            just now
+                        </h5>
+                    }
+                    else
+                    {
+                        <h5>
+
+                            @intTime @timeType ago
+                        </h5>
+                    }
+
+
+                }
+            </div>
+            <div style="float:right">
+                @{
+                    foreach (var cat in ViewBag.categories)
+                    {
+                        if (Model.CategoryId == cat.CategoryId)
+                        {
+                            <h5>@Html.ActionLink("on " + (string)cat.CategoryName, "Index", new { byCategory = cat.CategoryName })</h5>
+                        }
+                    }
+                }
+
+            </div>
+        </div>
+    </div>
+
+    @if (ViewBag.starredAnswer == true)
+    {
+
+        @foreach (var item in ViewBag.questionAnswers)
+        {
+            var starred = item.Starred;
+            if (starred == true)
+            {
+
+                <div style="margin-top:50px">
+                    <div class="col-lg-12" style="margin-bottom:30px;color:aqua">
+
+                        <div class="panel panel-default" >
+
+                            <div class="panel-body" >
+                                <h4 style="color:goldenrod"><span class="glyphicon glyphicon-star"></span> Best answer </h4>
+                                <hr />
+
+                                @{
+                                    var anonymous = item.Anonymous;
+                                    if (anonymous == true)
+                                    {
+                                        <h5 style="margin-left:10px">
+                                            anonymous answers:
+                                        </h5>
+                                    }
+                                    else
+                                    {
+                                        @foreach (var user in ViewBag.users)
+                                        {
+                                            if (user.Id == item.UserId)
+                                            {
+                                                <h5 style="margin-left:10px">@user.UserName answers:</h5>
+                                                break;
+                                            }
+                                        }
+                                       
+                                    }
+                                 }
+
+                                <br />
+                                <div style="margin-right:30px; margin-left:40px" class="text-primary">
+                                    <h4 class="text-primary">@item.Text</h4>
+                                </div>
+                                <br />
+
+                                <div style="float:right">
+                                    @{
+                                        TimeSpan atimeDifference = DateTime.Now - item.Date;
+                                        int aintTime = (int)atimeDifference.TotalMinutes;
+                                        string atimeType = "minutes";
+                                        if (aintTime == 1)
+                                        {
+                                            atimeType = "minute";
+                                        }
+
+
+                                        if (aintTime > 59)
+                                        {
+
+                                            aintTime = (int)atimeDifference.TotalHours;
+                                            if (aintTime == 1)
+                                            {
+                                                atimeType = "hour";
+                                            }
+                                            else
+                                            {
+                                                atimeType = "hours";
+                                            }
+                                        }
+
+                                        if (aintTime > 23)
+                                        {
+
+                                            aintTime = (int)atimeDifference.TotalDays;
+                                            if (aintTime == 1)
+                                            {
+                                                atimeType = "day";
+                                            }
+                                            else
+                                            {
+                                                atimeType = "days";
+                                            }
+                                        }
+
+
+                                        if (aintTime > 30)
+                                        {
+
+                                            aintTime = aintTime / 31;
+                                            if (aintTime == 1)
+                                            {
+                                                atimeType = "month";
+                                            }
+                                            else
+                                            {
+                                                atimeType = "months";
+                                            }
+                                        }
+
+
+                                        if (aintTime > 364)
+                                        {
+
+                                            aintTime = aintTime / 365;
+                                            if (aintTime == 1)
+                                            {
+                                                atimeType = "year";
+                                            }
+                                            else
+                                            {
+                                                atimeType = "years";
+                                            }
+                                        }
+
+
+                                        if (aintTime == 0)
+                                        {
+                                            <h5>
+                                                just now
+                                            </h5>
+                                        }
+                                        else
+                                        {<h5>
+                                                @aintTime @atimeType ago
+                                            </h5>
+
+                                        }
+
+
+                                    }
+                                </div>
+                                <br>
+                                <hr />
+                            </div>
+
+
+
+                        </div>
+                    </div>
+                </div>
+                
+            }
+        }
+
+
+
+
+    }
+
+
+
+
+
+    <form asp-action="Create" asp-controller="Answer" style="margin-top:70px">
+
+        <div class="form-group col-lg-8">
+            
+            <textarea name="Text" asp-controller="Answer" placeholder="Answer..." class="form-control" rows="7"></textarea>
+
+        </div>
+        <div class="form-group col-lg-4 text-primary">
+           
+            <br />
+            <input data-val="true"
+                   data-val-required="The Anonymous field is required."
+                   id="Anonymous"
+                   name="Anonymous"
+                   type="checkbox"
+                   value="true" />
+
+            <input name="Anonymous" type="hidden" value="false" />
+            <label class="control-label">Anonymous</label>
+
+
+
+            <br />
+            <br />
+            <br />
+            <br />
+            <div>
+                <input type="submit" value="Answer" class="btn btn-primary" />
+            </div>
+        </div>
+    </form>
+
+
+
+
+</div>
+<div class="col-lg-4">
+
+    @if (Model.Anonymous == false) { 
+        <div class="panel panel-default" style="margin-top:50px">
+
+            <div class="panel panel-body text-primary">
+                @foreach (var item in ViewBag.users)
+                {
+                    if (item.Id == Model.UserId)
+                    {
+                        <br />
+                        <h4 class="text-primary text-center">@item.UserName</h4>
+
+
+                        <hr />
+
+
+
+                        <h5>Questions asked: @item.QuestionsAsked</h5>
+                        <hr />
+                        <h5>Answers given: @item.GivenAnswers</h5>
+                        <hr />
+                        <h5>Stars received: @item.StarsReceived</h5>
+                        <hr />
+                        <h5>Stars given: @item.StarsGiven</h5>
+                        <hr />
+                        if (@item.Birthday == DateTime.MinValue)
+                        {
+                            <h5>Birthday: -</h5>
+                        }
+                        else
+                        {
+                            string birthday = @item.Birthday.ToLongDateString();
+                            <h5>Birthday: @birthday</h5>
+                        }
+
+                        <hr />
+                        string registrationDate = item.RegistrationDate.ToLongDateString();
+
+                        <h5>Member since: @registrationDate</h5>
+
+                        //break;
+                    }
+                }
+            </div>
+
+        </div>
+        }
+</div>
+
+
+
+<div class="col-lg-6">
+
+    <h4>Answers (@Model.AnswersNumber):</h4>
+    <hr />
+
+    @foreach (var item in ViewBag.questionAnswers)
+    {
+
+        <div style="margin-bottom:30px">
+            <div class="panel panel-default">
+
+                <div class="panel-body">
+
+                    <div style="float:right">
+
+                        <form>
+
+
+
+
+                            @if (User.Identity.IsAuthenticated && (User.FindFirstValue(ClaimTypes.NameIdentifier) == item.UserId) || User.IsInRole("Admin"))
+                            {
+
+                                <a asp-action="Edit" asp-controller="Answer" asp-route-id="@item.AnswerId"> <span style="font-size:larger" class="glyphicon glyphicon-pencil"></span></a>
+                                <a asp-action="Delete" asp-controller="Answer" asp-route-id="@item.AnswerId"> <span style="font-size:larger" class="glyphicon glyphicon-remove"></span></a>
+
+                            }
+                        </form>
+                    </div>
+                    @{
+                        var anonymous = item.Anonymous;
+                        if (anonymous == true)
+                        {
+                            <h5>
+                                anonymous answers:
+                            </h5>
+                        }
+                        else
+                        {
+                            @foreach (var user in ViewBag.users)
+                            {
+                                if (user.Id == item.UserId)
+                                {
+                                    <h5>@user.UserName answers:</h5>
+                                    break;
+                                }
+                            }
+                            
+                        }}
+
+                    <br />
+                    <div style="margin-right:20px; margin-left:40px" class="text-primary">
+                        <h5 class="text-primary">@item.Text</h5>
+                    </div>
+                    <br />
+                    @if (User.Identity.IsAuthenticated && (User.FindFirstValue(ClaimTypes.NameIdentifier) == Model.UserId) && item.Starred == false)
+                    {
+                        <div style="float:left">
+                            <form asp-action="Star" asp-controller="Answer">
+
+
+                                <button class="btn btn-xs btn-primary" asp-action="Star" asp-controller="Answer" asp-route-id=@item.AnswerId type="submit"><span class="glyphicon glyphicon-star"></span> Star</button>
+
+                            </form>
+
+
+                        </div>
+                    }
+                    <div style="float:right">
+                        @{
+                            TimeSpan atimeDifference = DateTime.Now - item.Date;
+                            int aintTime = (int)atimeDifference.TotalMinutes;
+                            string atimeType = "minutes";
+                            if (aintTime == 1)
+                            {
+                                atimeType = "minute";
+                            }
+
+
+                            if (aintTime > 59)
+                            {
+
+                                aintTime = (int)atimeDifference.TotalHours;
+                                if (aintTime == 1)
+                                {
+                                    atimeType = "hour";
+                                }
+                                else
+                                {
+                                    atimeType = "hours";
+                                }
+                            }
+
+                            if (aintTime > 23)
+                            {
+
+                                aintTime = (int)atimeDifference.TotalDays;
+                                if (aintTime == 1)
+                                {
+                                    atimeType = "day";
+                                }
+                                else
+                                {
+                                    atimeType = "days";
+                                }
+                            }
+
+
+                            if (aintTime > 30)
+                            {
+
+                                aintTime = aintTime / 31;
+                                if (aintTime == 1)
+                                {
+                                    atimeType = "month";
+                                }
+                                else
+                                {
+                                    atimeType = "months";
+                                }
+                            }
+
+
+                            if (aintTime > 364)
+                            {
+
+                                aintTime = aintTime / 365;
+                                if (aintTime == 1)
+                                {
+                                    atimeType = "year";
+                                }
+                                else
+                                {
+                                    atimeType = "years";
+                                }
+                            }
+
+
+                            if (aintTime == 0)
+                            {
+                                <h5>
+                                    just now
+                                </h5>
+                            }
+                            else
+                            {<h5>
+                                    @aintTime @atimeType ago
+                                </h5>
+
+                            }
+
+
+                        }
+                    </div>
+
+                    <br>
+
+                </div>
+            </div>
+        </div>
+
+
+    }
+</div>
+
+

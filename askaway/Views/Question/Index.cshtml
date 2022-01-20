@@ -1,0 +1,281 @@
+﻿@model PaginatedList<askaway.Models.Question>
+
+
+<div class="col-lg-8">
+
+    <div style="margin-top:50px; margin-bottom:50px">
+        <div class="btn-group" style="float:left">
+            <a href="#" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-expanded="false">
+                Filter
+                <span class="caret"></span>
+            </a>
+            <ul class="dropdown-menu">
+                <li>@Html.ActionLink("Popular", "Index", new { popular = true })</li>
+                <li>@Html.ActionLink("Without answer", "Index", new { withoutAnswer = true })</li>
+                <li>@Html.ActionLink("Unstarred", "Index", new { unstarred = true })</li>
+            </ul>
+        </div>
+    </div>
+
+    <div style="float:right">
+        <form>
+
+            <button asp-action="Create" type="submit" class="btn btn-primary"> <span class="glyphicon glyphicon-question-sign"></span> Ask a question</button>
+
+        </form>
+    </div>
+
+</div>
+<div class="col-lg-8" style="margin-top:30px"></div>
+
+<div class="col-lg-8">
+
+    @if (ViewBag.noQuestions == 0)
+    {
+        <hr />
+        <p style="margin-top:20px">No results found in questions.</p>
+    }
+    else
+    {
+        foreach (var item in Model)
+        {
+            <div class="panel panel-default">
+
+                <div class="panel-body">
+                    <div class="text-info">
+
+                        @{
+                            TimeSpan timeDifference = DateTime.Now - item.Date;
+                            int intTime = (int)timeDifference.TotalMinutes;
+                            string timeType = "minutes";
+                            if (intTime == 1)
+                            {
+                                timeType = "minute";
+                            }
+
+
+                            if (intTime > 59)
+                            {
+
+                                intTime = (int)timeDifference.TotalHours;
+                                if (intTime == 1)
+                                {
+                                    timeType = "hour";
+                                }
+                                else
+                                {
+                                    timeType = "hours";
+                                }
+                            }
+
+                            if (intTime > 23)
+                            {
+
+                                intTime = (int)timeDifference.TotalDays;
+                                if (intTime == 1)
+                                {
+                                    timeType = "day";
+                                }
+                                else
+                                {
+                                    timeType = "days";
+                                }
+                            }
+
+
+                            if (intTime > 30)
+                            {
+
+                                intTime = intTime / 31;
+                                if (intTime == 1)
+                                {
+                                    timeType = "month";
+                                }
+                                else
+                                {
+                                    timeType = "months";
+                                }
+                            }
+
+
+                            if (intTime > 364)
+                            {
+
+                                intTime = intTime / 365;
+                                if (intTime == 1)
+                                {
+                                    timeType = "year";
+                                }
+                                else
+                                {
+                                    timeType = "years";
+                                }
+                            }
+
+                            if (item.Anonymous == true)
+                            {
+                                if (intTime == 0)
+                                {
+                                    <div style="float:left">
+
+                                        just now, anonymous asks:
+                                    </div>
+                                }
+                                else
+                                {
+                                    <div style="float:left">
+
+                                        @intTime @timeType ago, anonymous asks:
+                                    </div>
+                                }
+                            }
+                            else
+
+                            {
+
+                                if (intTime == 0)
+                                {
+
+                                    @foreach (var user in ViewBag.users)
+                                    {
+                                        if (user.Id == item.UserId)
+                                        {
+                                            <div style="float:left">just now, @user.UserName asks:</div>
+                                            break;
+                                        }
+                                    }
+
+
+                                }
+                                else
+                                { @foreach (var user in ViewBag.users)
+                                    {
+                                        if (user.Id == item.UserId)
+                                        {
+                                            <div style="float:left">@intTime @timeType ago, @user.UserName asks:</div>
+                                            break;
+                                        }
+                                    }
+
+
+
+                            }
+
+                        }
+                        <div style="float:right">
+                            @{
+                                foreach (var cat in ViewBag.categories)
+                                {
+                                    if (item.CategoryId == cat.CategoryId)
+                                    {
+                                        @Html.ActionLink("on " + (string)cat.CategoryName, "Index", new { byCategory = cat.CategoryName })
+                                    }
+                                }
+                            }
+
+                        </div>
+                        }
+
+
+
+
+                    </div>
+
+
+                    <br />
+                    <br>
+                    <br />
+                    <h4 style="margin-right:40px; margin-left:40px">
+                        <a asp-action="Details" asp-route-id="@item.QuestionId">@Html.DisplayFor(modelItem => item.Title)</a>
+                    </h4>
+                    <hr />
+                    <div>
+                        <div style="float:left">
+                            @item.AnswersNumber <span class="glyphicon glyphicon-comment"></span>
+                        </div>
+
+                        <div style="float:right">
+                            <a style="color:#ff6a00" asp-action="Details" asp-route-id="@item.QuestionId"> <span class="glyphicon glyphicon-share-alt"></span>Answer</a>
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+        }
+
+
+
+        var prevDisabled = !Model.HasPreviousPage ? "disabled" : "";
+        var nextDisabled = !Model.HasNextPage ? "disabled" : "";
+
+        <a asp-action="Index"
+           asp-route-pageNumber="@(Model.PageIndex - 1)"
+           class="btn btn-primary @prevDisabled">
+            Previous
+        </a>
+        <a asp-action="Index"
+           asp-route-pageNumber="@(Model.PageIndex + 1)"
+           class="btn btn-primary @nextDisabled">
+            Next
+        </a>
+
+    }
+
+</div>
+
+<div class="col-lg-4" style="margin-top:50px">
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h2 class="panel-title text-center"> Statistics <text class="text-primary">askaway</text></h2>
+        </div>
+        <div class="panel-body alert-info">
+            Users: <text style="color:dimgray">@ViewBag.noUsers</text>
+            <hr />
+            Questions: <text style="color:dimgray">@ViewBag.noQuestions</text>
+            <hr />
+            Answers: <text style="color:dimgray">@ViewBag.noAnswers</text>
+            <hr />
+            Questions answered: <text style="color:dimgray">@ViewBag.answered%</text>
+        </div>
+
+    </div>
+</div>
+
+
+<div class="col-lg-4" style="margin-top:50px">
+
+    <div class="panel panel-default">
+
+        <div class="panel-body text-center">
+            <h3 style="margin-bottom:20px" class="text-info"> Categories </h3>
+            <hr>
+            <p style="margin-top:10px">@Html.ActionLink("All Categories", "Index", new { byCategory = "All Categories" })</p>
+            <hr />
+            @foreach (var category in ViewBag.categories)
+            {
+                string categoryName = category.CategoryName;
+                if (categoryName == ViewBag.category)
+                {
+                    <p>@categoryName</p>
+                }
+                else
+                {
+                    <p>@Html.ActionLink(categoryName, "Index", new { byCategory = category.CategoryName })</p>
+                }
+
+
+                if (category != ((IEnumerable<dynamic>)ViewBag.categories).Last())
+                {
+                    <hr />
+                }
+
+            }
+
+        </div>
+    </div>
+</div>
+
+
+

@@ -1,0 +1,40 @@
+﻿@model askaway.Models.Answer
+
+@{
+    ViewData["Title"] = "Edit";
+}
+
+<div class="col-md-4">
+</div>
+<div class="row">
+    <div class="col-md-4 text-primary"  style="margin-top:50px">
+        <form asp-action="Edit">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <input type="hidden" asp-for="AnswerId" />
+            <div class="form-group">
+                <label asp-for="Text" class="control-label"> Edit answer </label>
+                <textarea asp-for="Text" class="form-control" rows="7"></textarea>
+                <span asp-validation-for="Text" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input data-val="true"
+                       data-val-required="The Anonymous field is required."
+                       id="Anonymous"
+                       name="Anonymous"
+                       type="checkbox"
+                       value="true" />
+
+                <input name="Anonymous" type="hidden" value="false" />
+                <label class="control-label">Anonymous</label>
+            </div>
+            <div class="form-group"style="float:right;margin-top:10px">
+                <input type="submit" value="Save" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
